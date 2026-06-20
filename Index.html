@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THIRAN English Diagnostic Assessment | English Teachers Hub Theni</title>
+<!--
+  ETH THENI — THIRAN ENGLISH DIAGNOSTIC ASSESSMENT (Interactive)
+  Standalone page — built for GitHub Pages hosting.
+  Save as e.g. thiran-quiz.html in your repo, enable Pages, then either
+  link to it from your blog post, or embed it with:
+  <iframe src="https://YOUR-GH-USERNAME.github.io/YOUR-REPO/thiran-quiz.html"
+          style="width:100%;height:1700px;border:none;"></iframe>
+  Downloaded report is generated client-side with jsPDF — no server needed.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Mulish:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;}
+body{margin:0;padding:24px 12px;background:#EFE9D8;font-family:'Mulish',Arial,sans-serif;color:#2B2B2B;}
+#eth-thiran-quiz{max-width:680px;margin:0 auto;background:#FBF7EE;border:1px solid #E7DEC8;border-radius:14px;overflow:hidden;line-height:1.55;}
+#eth-thiran-quiz h1,#eth-thiran-quiz h2,#eth-thiran-quiz h3{font-family:'Playfair Display',Georgia,serif;margin:0;}
+#eth-thiran-quiz .ethq-hero{background:#1B2A4A;color:#FBF7EE;padding:26px 22px 20px;text-align:center;border-bottom:4px solid #C9A227;}
+#eth-thiran-quiz .ethq-hero h1{font-size:22px;font-weight:800;letter-spacing:.3px;}
+#eth-thiran-quiz .ethq-hero p{margin:6px 0 0;font-size:13px;color:#E3C97A;font-weight:600;letter-spacing:.5px;text-transform:uppercase;}
+#eth-thiran-quiz .ethq-track{display:flex;justify-content:center;gap:10px;padding:16px 18px 4px;background:#FBF7EE;}
+#eth-thiran-quiz .ethq-dot{width:30px;height:30px;border-radius:50%;background:#E7DEC8;color:#8A7F63;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;font-family:'Mulish',sans-serif;transition:all .3s ease;}
+#eth-thiran-quiz .ethq-dot.ethq-done{background:#C9A227;color:#1B2A4A;transform:scale(1.08);}
+#eth-thiran-quiz .ethq-intro{padding:4px 22px 18px;text-align:center;font-size:13.5px;color:#5A5240;}
+#eth-thiran-quiz .ethq-namebar{display:flex;gap:10px;padding:0 22px 18px;flex-wrap:wrap;}
+#eth-thiran-quiz .ethq-namebar input{flex:1;min-width:140px;padding:9px 12px;border:1.5px solid #D8CFA9;border-radius:8px;font-family:'Mulish',sans-serif;font-size:14px;background:#fff;}
+#eth-thiran-quiz .ethq-namebar input:focus{outline:none;border-color:#C9A227;}
+#eth-thiran-quiz .ethq-part{margin:0 16px 16px;background:#FFFFFF;border:1px solid #ECE4CC;border-radius:12px;padding:18px 18px 20px;}
+#eth-thiran-quiz .ethq-part-head{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+#eth-thiran-quiz .ethq-badge{background:#1B2A4A;color:#E3C97A;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:700;font-size:15px;flex-shrink:0;}
+#eth-thiran-quiz .ethq-part h2{font-size:17px;color:#1B2A4A;}
+#eth-thiran-quiz .ethq-marks{font-size:11px;color:#A9A089;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-left:auto;white-space:nowrap;}
+#eth-thiran-quiz .ethq-note{font-size:12.5px;color:#8A7F63;font-style:italic;margin:6px 0 14px;}
+#eth-thiran-quiz .ethq-sublabel{font-size:13px;font-weight:700;color:#1B2A4A;margin:14px 0 8px;}
+#eth-thiran-quiz .ethq-flashgrid{display:flex;flex-wrap:wrap;gap:10px;}
+#eth-thiran-quiz .ethq-flash{background:#FBF7EE;border:1.5px solid #ECE4CC;border-radius:10px;padding:10px 12px;flex:1 1 130px;min-width:120px;text-align:center;}
+#eth-thiran-quiz .ethq-flash .ethq-flash-text{font-family:'Playfair Display',serif;font-weight:700;font-size:18px;color:#1B2A4A;margin-bottom:6px;}
+#eth-thiran-quiz .ethq-listen-btn{background:#fff;border:1.5px solid #C9A227;color:#9C7E12;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;cursor:pointer;}
+#eth-thiran-quiz .ethq-listen-btn:hover{background:#C9A227;color:#fff;}
+#eth-thiran-quiz .ethq-checkline{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11.5px;color:#5A5240;margin-top:6px;}
+#eth-thiran-quiz .ethq-checkline input{accent-color:#2F6F4E;width:14px;height:14px;}
+#eth-thiran-quiz .ethq-sentence{display:flex;align-items:center;gap:10px;background:#FBF7EE;border:1.5px solid #ECE4CC;border-radius:10px;padding:10px 12px;margin-bottom:8px;}
+#eth-thiran-quiz .ethq-sentence span{flex:1;font-size:14.5px;color:#2B2B2B;}
+#eth-thiran-quiz .ethq-match-wrap{display:flex;gap:18px;margin-top:6px;flex-wrap:wrap;justify-content:center;}
+#eth-thiran-quiz .ethq-match-col{display:flex;flex-direction:column;gap:8px;flex:1;min-width:130px;}
+#eth-thiran-quiz .ethq-match-btn{border:1.5px solid #D8CFA9;background:#fff;border-radius:9px;padding:10px;font-size:14px;font-weight:700;cursor:pointer;color:#1B2A4A;font-family:'Mulish',sans-serif;transition:all .2s ease;}
+#eth-thiran-quiz .ethq-match-btn.ethq-emoji{font-size:24px;padding:8px;}
+#eth-thiran-quiz .ethq-match-btn.ethq-selected{border-color:#C9A227;background:#FBF0CF;}
+#eth-thiran-quiz .ethq-match-btn.ethq-correct{border-color:#2F6F4E;background:#E3F0E7;color:#2F6F4E;cursor:default;}
+#eth-thiran-quiz .ethq-match-btn.ethq-wrong{border-color:#B3461C;background:#FBE6DC;}
+#eth-thiran-quiz .ethq-passage{background:#FBF7EE;border-left:4px solid #C9A227;padding:12px 14px;font-size:14px;border-radius:0 8px 8px 0;margin-bottom:14px;}
+#eth-thiran-quiz .ethq-qline{margin-bottom:12px;}
+#eth-thiran-quiz .ethq-qline label{display:block;font-size:13.5px;font-weight:700;color:#1B2A4A;margin-bottom:5px;}
+#eth-thiran-quiz .ethq-qline input{width:100%;padding:9px 12px;border:1.5px solid #D8CFA9;border-radius:8px;font-family:'Mulish',sans-serif;font-size:14px;background:#fff;}
+#eth-thiran-quiz .ethq-qline input:focus{outline:none;border-color:#C9A227;}
+#eth-thiran-quiz .ethq-fb{font-size:12px;font-weight:700;margin-top:4px;display:none;}
+#eth-thiran-quiz .ethq-fb.ethq-fb-ok{color:#2F6F4E;display:block;}
+#eth-thiran-quiz .ethq-fb.ethq-fb-no{color:#B3461C;display:block;}
+#eth-thiran-quiz .ethq-writegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+#eth-thiran-quiz .ethq-writegrid input{padding:9px 10px;border:1.5px solid #D8CFA9;border-radius:8px;font-size:13.5px;font-family:'Mulish',sans-serif;}
+#eth-thiran-quiz .ethq-writegrid input:focus{outline:none;border-color:#C9A227;}
+#eth-thiran-quiz .ethq-sentwrite{width:100%;padding:9px 10px;border:1.5px solid #D8CFA9;border-radius:8px;font-size:13.5px;font-family:'Mulish',sans-serif;margin-bottom:8px;}
+#eth-thiran-quiz .ethq-sentwrite:focus{outline:none;border-color:#C9A227;}
+#eth-thiran-quiz .ethq-cta-wrap{text-align:center;padding:6px 22px 24px;}
+#eth-thiran-quiz .ethq-cta{background:#C9A227;color:#1B2A4A;border:none;border-radius:30px;padding:14px 34px;font-size:15px;font-weight:800;font-family:'Mulish',sans-serif;cursor:pointer;box-shadow:0 4px 0 #9C7E12;}
+#eth-thiran-quiz .ethq-cta:active{transform:translateY(2px);box-shadow:0 2px 0 #9C7E12;}
+#eth-thiran-quiz .ethq-result{display:none;margin:0 16px 22px;background:#1B2A4A;border-radius:14px;padding:26px 20px;text-align:center;color:#FBF7EE;}
+#eth-thiran-quiz .ethq-result .ethq-stage-emoji{font-size:54px;line-height:1;margin-bottom:8px;}
+#eth-thiran-quiz .ethq-result h3{color:#E3C97A;font-size:20px;margin-bottom:4px;}
+#eth-thiran-quiz .ethq-result .ethq-score{font-size:15px;font-weight:700;color:#fff;margin-bottom:10px;}
+#eth-thiran-quiz .ethq-result .ethq-stagename{display:inline-block;background:#C9A227;color:#1B2A4A;font-weight:800;font-size:13px;padding:6px 16px;border-radius:20px;letter-spacing:.3px;margin-bottom:12px;}
+#eth-thiran-quiz .ethq-result p.ethq-msg{font-size:13.5px;color:#D8CFA9;max-width:420px;margin:0 auto;}
+#eth-thiran-quiz .ethq-result .ethq-pdfnote{font-size:11.5px;color:#B7AE91;margin-top:14px;}
+#eth-thiran-quiz .ethq-footer{background:#1B2A4A;color:#C9A227;text-align:center;font-size:11.5px;padding:14px 18px;font-weight:600;}
+#eth-thiran-quiz .ethq-footer a{color:#E3C97A;text-decoration:none;}
+#eth-thiran-quiz .ethq-btnrow{display:flex;gap:6px;justify-content:center;margin-bottom:6px;flex-wrap:wrap;}
+#eth-thiran-quiz .ethq-mic-btn{background:#fff;border:1.5px solid #2F6F4E;color:#2F6F4E;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;cursor:pointer;}
+#eth-thiran-quiz .ethq-mic-btn:hover{background:#2F6F4E;color:#fff;}
+#eth-thiran-quiz .ethq-mic-btn.ethq-listening{background:#B3461C;border-color:#B3461C;color:#fff;}
+#eth-thiran-quiz .ethq-voicefb{font-size:11px;font-weight:700;min-height:14px;margin-top:4px;color:#5A5240;}
+#eth-thiran-quiz .ethq-voicefb.ok{color:#2F6F4E;}
+#eth-thiran-quiz .ethq-voicefb.no{color:#B3461C;}
+#eth-thiran-quiz .ethq-sentwrap{margin-bottom:10px;}
+#eth-thiran-quiz .ethq-sentwrap .ethq-voicefb{text-align:right;padding-right:4px;}
+#eth-thiran-quiz .ethq-pdf-btn{margin-top:14px;background:#C9A227;border:none;color:#1B2A4A;border-radius:24px;padding:11px 26px;font-size:13.5px;font-weight:800;cursor:pointer;font-family:'Mulish',sans-serif;}
+#eth-thiran-quiz .ethq-pdf-btn:hover{background:#E3C97A;}
+#eth-thiran-quiz .ethq-pdf-btn:disabled{opacity:.6;cursor:wait;}
+@media(max-width:420px){#eth-thiran-quiz .ethq-writegrid{grid-template-columns:1fr;}}
+@media (prefers-reduced-motion: reduce){#eth-thiran-quiz *{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+
+<div id="eth-thiran-quiz">
+
+<div class="ethq-hero">
+  <h1>THIRAN English Diagnostic Assessment</h1>
+  <p>2026&ndash;27 &middot; English Teachers Hub Theni</p>
+</div>
+
+<div class="ethq-track">
+  <div class="ethq-dot" data-dot="A">A</div>
+  <div class="ethq-dot" data-dot="B">B</div>
+  <div class="ethq-dot" data-dot="C">C</div>
+  <div class="ethq-dot" data-dot="D">D</div>
+</div>
+<p class="ethq-intro">Let&rsquo;s find out how you read and write in English &mdash; tap &#128266; Listen to hear each word, then try every part!</p>
+
+<div class="ethq-namebar">
+  <input type="text" id="ethq-name" placeholder="Your name">
+  <input type="text" id="ethq-class" placeholder="Class &amp; Section">
+</div>
+
+<!-- PART A -->
+<div class="ethq-part" id="ethq-partA">
+  <div class="ethq-part-head"><div class="ethq-badge">A</div><h2>Letter &amp; Word Recognition</h2><span class="ethq-marks">5 Marks</span></div>
+  <p class="ethq-note">Tap &#128266; Listen to hear it, then &#127908; Say it to check your pronunciation. Single letters can be tricky for voice recognition &mdash; speak clearly and we'll accept close matches. The picture match below is auto-scored.</p>
+
+  <div class="ethq-sublabel">Read the letters aloud</div>
+  <div class="ethq-flashgrid" id="ethq-letters"></div>
+
+  <div class="ethq-sublabel">Read the words aloud</div>
+  <div class="ethq-flashgrid" id="ethq-words"></div>
+
+  <div class="ethq-sublabel">Match the word with the picture</div>
+  <div class="ethq-match-wrap">
+    <div class="ethq-match-col" id="ethq-match-words"></div>
+    <div class="ethq-match-col" id="ethq-match-emojis"></div>
+  </div>
+</div>
+
+<!-- PART B -->
+<div class="ethq-part" id="ethq-partB">
+  <div class="ethq-part-head"><div class="ethq-badge">B</div><h2>Sentence Reading</h2><span class="ethq-marks">5 Marks</span></div>
+  <p class="ethq-note">Listen to each sentence, read it aloud yourself, try Say it, then tick if you read it smoothly.</p>
+  <div id="ethq-sentences"></div>
+</div>
+
+<!-- PART C -->
+<div class="ethq-part" id="ethq-partC">
+  <div class="ethq-part-head"><div class="ethq-badge">C</div><h2>Reading Comprehension</h2><span class="ethq-marks">5 Marks</span></div>
+  <div class="ethq-passage">Ravi has a pet dog. Its name is Tommy. Tommy likes milk and biscuits. Ravi plays with Tommy every evening.</div>
+  <div id="ethq-comprehension"></div>
+</div>
+
+<!-- PART D -->
+<div class="ethq-part" id="ethq-partD">
+  <div class="ethq-part-head"><div class="ethq-badge">D</div><h2>Writing Skill</h2><span class="ethq-marks">5 Marks</span></div>
+  <div class="ethq-sublabel">Write any FIVE English words</div>
+  <div class="ethq-writegrid" id="ethq-fivewords"></div>
+  <div class="ethq-sublabel">Write THREE simple sentences about yourself</div>
+  <div id="ethq-threesentences"></div>
+</div>
+
+<div class="ethq-cta-wrap">
+  <button class="ethq-cta" id="ethq-calc" type="button">&#128202; See My Reading Level</button>
+</div>
+
+<div class="ethq-result" id="ethq-result">
+  <div class="ethq-stage-emoji" id="ethq-stage-emoji">&#127793;</div>
+  <h3 id="ethq-result-name">Great job!</h3>
+  <div class="ethq-score" id="ethq-result-score">Score: 0 / 20</div>
+  <div class="ethq-stagename" id="ethq-result-stage">Beginner</div>
+  <p class="ethq-msg" id="ethq-result-msg"></p>
+  <button class="ethq-pdf-btn" id="ethq-download-pdf" type="button">&#11015;&#65039; Download Full Report (PDF)</button>
+  <p class="ethq-pdfnote">Includes every question, your answer, and the correct result &mdash; just like a marked test paper.</p>
+</div>
+
+<div class="ethq-footer">
+  T.S. Ramachandran, ELT, GHSS Erasakkanayakanur, Theni District &middot;
+  <a href="https://englishteacherhub.blogspot.com" target="_blank">englishteacherhub.blogspot.com</a>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+(function(){
+  var root = document.getElementById('eth-thiran-quiz');
+  if(!root) return;
+
+  var lastReport = null;
+
+  // ---- OPTIONAL: live score tracking to a Google Sheet (like a Google Form response sheet) ----
+  // 1) Set up the Google Sheet + Apps Script Web App (steps provided separately).
+  // 2) Paste the Web App URL below, replacing the placeholder text.
+  // If left as-is, tracking is simply skipped — the quiz still works normally.
+  var GOOGLE_SHEET_URL = 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+
+  function trackScore(data){
+    if(!GOOGLE_SHEET_URL || GOOGLE_SHEET_URL.indexOf('PASTE_YOUR') !== -1) return;
+    try{
+      fetch(GOOGLE_SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          name: data.name, cls: data.cls,
+          scoreA: data.scoreA, scoreB: data.scoreB, scoreC: data.scoreC, scoreD: data.scoreD,
+          total: data.total, stage: data.stage
+        })
+      });
+    }catch(e){}
+  }
+
+  var ttsOK = ('speechSynthesis' in window);
+  function speak(text){
+    if(!ttsOK) return;
+    try{
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.rate = 0.85; u.pitch = 1; u.lang = 'en-IN';
+      window.speechSynthesis.speak(u);
+    }catch(e){}
+  }
+
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var voiceOK = !!SR;
+  var letterPhonetics = {
+    'A':['a','ay','hey','eh','aye','hay','ei'],
+    'M':['m','em','am','hmm','mmm','them','umm'],
+    'T':['t','tea','tee','the','ti'],
+    'P':['p','pea','pee','bee'],
+    'R':['r','are','ar','arr','our','har']
+  };
+
+  function checkVoice(targetText, fbEl, micBtn, mode){
+    if(!voiceOK) return;
+    try{
+      var rec = new SR();
+      rec.lang = 'en-IN';
+      rec.maxAlternatives = 5;
+      rec.interimResults = false;
+      var gotResult = false;
+      micBtn.classList.add('ethq-listening');
+      micBtn.innerHTML = '&#9679; Listening&hellip;';
+      fbEl.className = 'ethq-voicefb';
+      fbEl.textContent = '';
+      rec.onresult = function(e){
+        gotResult = true;
+        var alts = [];
+        for(var i=0;i<e.results[0].length;i++){ alts.push(e.results[0][i].transcript.toLowerCase()); }
+        var heardRaw = alts.join(' ');
+        var heard = heardRaw.replace(/[^a-z\s]/g,' ');
+        var heardWords = heard.split(/\s+/).filter(Boolean);
+        var display = heardWords.join(' ') || heardRaw;
+        var ok = false;
+        if(mode === 'letter'){
+          var letterLower = targetText.toLowerCase();
+          var accepted = letterPhonetics[targetText.toUpperCase()] || [letterLower];
+          for(var k=0;k<heardWords.length;k++){
+            var hw = heardWords[k];
+            if(accepted.indexOf(hw) !== -1 || hw.charAt(0) === letterLower){ ok = true; break; }
+          }
+        } else {
+          var target = targetText.toLowerCase().replace(/[^a-z\s]/g,' ');
+          var targetWords = target.split(/\s+/).filter(Boolean);
+          var matched = 0;
+          targetWords.forEach(function(w){ if(heardWords.indexOf(w) !== -1) matched++; });
+          var ratio = targetWords.length ? (matched/targetWords.length) : 0;
+          ok = ratio >= 0.7;
+        }
+        if(ok){
+          fbEl.className = 'ethq-voicefb ok';
+          fbEl.textContent = '\u2713 Nice pronunciation!';
+        } else {
+          fbEl.className = 'ethq-voicefb no';
+          fbEl.textContent = 'I heard \u201c' + display + '\u201d \u2014 try again';
+        }
+      };
+      rec.onerror = function(){
+        gotResult = true;
+        fbEl.className = 'ethq-voicefb no';
+        fbEl.textContent = 'Could not hear clearly \u2014 try again';
+      };
+      rec.onend = function(){
+        if(!gotResult){
+          fbEl.className = 'ethq-voicefb no';
+          fbEl.textContent = 'Didn\u2019t catch that \u2014 tap Say it and try again, a little louder/slower';
+        }
+        micBtn.classList.remove('ethq-listening');
+        micBtn.innerHTML = '&#127908; Say it';
+      };
+      rec.start();
+    }catch(e){
+      fbEl.className = 'ethq-voicefb no';
+      fbEl.textContent = 'Voice practice is not available on this browser.';
+    }
+  }
+
+  function el(tag, cls, html){
+    var e = document.createElement(tag);
+    if(cls) e.className = cls;
+    if(html !== undefined) e.innerHTML = html;
+    return e;
+  }
+
+  function makeFlash(text, voiceMode){
+    var card = el('div','ethq-flash');
+    card.appendChild(el('div','ethq-flash-text', text));
+    var row = el('div','ethq-btnrow');
+    var btn = el('button','ethq-listen-btn', '&#128266; Listen');
+    btn.type = 'button';
+    btn.addEventListener('click', function(){ speak(text); });
+    if(!ttsOK) btn.style.display = 'none';
+    row.appendChild(btn);
+    var vfb = el('div','ethq-voicefb');
+    if(voiceMode){
+      var micBtn = el('button','ethq-mic-btn', '&#127908; Say it');
+      micBtn.type = 'button';
+      micBtn.addEventListener('click', function(){ checkVoice(text, vfb, micBtn, voiceMode); });
+      if(!voiceOK) micBtn.style.display = 'none';
+      row.appendChild(micBtn);
+    }
+    card.appendChild(row);
+    if(voiceMode) card.appendChild(vfb);
+    var line = el('label','ethq-checkline');
+    var cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.className = 'ethq-readcheck';
+    line.appendChild(cb);
+    line.appendChild(document.createTextNode('I can read this'));
+    card.appendChild(line);
+    return card;
+  }
+
+  // Part A: letters & words — voice practice now on BOTH (letters use phonetic-tolerant matching)
+  var lettersWrap = root.querySelector('#ethq-letters');
+  ['A','M','T','P','R'].forEach(function(L){ lettersWrap.appendChild(makeFlash(L, 'letter')); });
+
+  var wordsWrap = root.querySelector('#ethq-words');
+  ['cat','school','teacher','garden'].forEach(function(w){ wordsWrap.appendChild(makeFlash(w, 'phrase')); });
+
+  // Part A: matching
+  var pairs = [
+    {key:'apple', word:'Apple', emoji:'&#127822;'},
+    {key:'ball',  word:'Ball',  emoji:'&#9917;'},
+    {key:'tree',  word:'Tree',  emoji:'&#127795;'},
+    {key:'book',  word:'Book',  emoji:'&#128214;'}
+  ];
+  var emojiOrder = [pairs[2], pairs[0], pairs[3], pairs[1]];
+
+  var wordCol = root.querySelector('#ethq-match-words');
+  var emojiCol = root.querySelector('#ethq-match-emojis');
+  var selectedWordBtn = null, selectedKey = null;
+
+  pairs.forEach(function(p){
+    var b = el('button','ethq-match-btn', p.word);
+    b.type = 'button'; b.setAttribute('data-key', p.key);
+    b.addEventListener('click', function(){
+      if(b.classList.contains('ethq-correct')) return;
+      if(selectedWordBtn) selectedWordBtn.classList.remove('ethq-selected');
+      selectedWordBtn = b; selectedKey = p.key;
+      b.classList.add('ethq-selected');
+    });
+    wordCol.appendChild(b);
+  });
+
+  emojiOrder.forEach(function(p){
+    var b = el('button','ethq-match-btn ethq-emoji', p.emoji);
+    b.type = 'button'; b.setAttribute('data-key', p.key);
+    b.addEventListener('click', function(){
+      if(b.classList.contains('ethq-correct')) return;
+      if(!selectedWordBtn) return;
+      if(p.key === selectedKey){
+        b.classList.add('ethq-correct');
+        selectedWordBtn.classList.add('ethq-correct');
+        selectedWordBtn.classList.remove('ethq-selected');
+        selectedWordBtn = null; selectedKey = null;
+      } else {
+        b.classList.add('ethq-wrong');
+        setTimeout(function(){ b.classList.remove('ethq-wrong'); }, 500);
+        if(selectedWordBtn) selectedWordBtn.classList.remove('ethq-selected');
+        selectedWordBtn = null; selectedKey = null;
+      }
+    });
+    emojiCol.appendChild(b);
+  });
+
+  // Part B: sentences
+  var sentences = [
+    'I am a student.',
+    'The sun rises in the east.',
+    'My school is very big.',
+    'We play football every day.',
+    'The bird is sitting on the tree.'
+  ];
+  var sentWrap = root.querySelector('#ethq-sentences');
+  sentences.forEach(function(s){
+    var wrap = el('div','ethq-sentwrap');
+    var row = el('div','ethq-sentence');
+    row.appendChild(el('span', null, s));
+    var btn = el('button','ethq-listen-btn','&#128266;');
+    btn.type = 'button';
+    btn.addEventListener('click', function(){ speak(s); });
+    if(!ttsOK) btn.style.display = 'none';
+    row.appendChild(btn);
+    var micBtn = el('button','ethq-mic-btn','&#127908; Say it');
+    micBtn.type = 'button';
+    var vfb = el('div','ethq-voicefb');
+    micBtn.addEventListener('click', function(){ checkVoice(s, vfb, micBtn, 'phrase'); });
+    if(!voiceOK) micBtn.style.display = 'none';
+    row.appendChild(micBtn);
+    var cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.className = 'ethq-sentcheck';
+    cb.style.width = '18px'; cb.style.height='18px';
+    cb.style.accentColor = '#2F6F4E';
+    row.appendChild(cb);
+    wrap.appendChild(row);
+    wrap.appendChild(vfb);
+    sentWrap.appendChild(wrap);
+  });
+
+  // Part C: comprehension
+  var passageWords = "ravi has a pet dog its name is tommy likes milk and biscuits plays with every evening".split(' ');
+  var questions = [
+    {q:"What is Ravi's pet?", hint:"dog", check:function(v){ return v.indexOf('dog') !== -1; }},
+    {q:"What is the dog's name?", hint:"Tommy", check:function(v){ return v.indexOf('tommy') !== -1; }},
+    {q:"What does Tommy like?", hint:"milk and biscuits", check:function(v){ return v.indexOf('milk') !== -1 || v.indexOf('biscuit') !== -1; }},
+    {q:"When does Ravi play with Tommy?", hint:"evening", check:function(v){ return v.indexOf('evening') !== -1; }},
+    {q:"Write any one word from the passage.", hint:"any word from the passage, e.g. Ravi, dog, Tommy, milk, evening", check:function(v){ return passageWords.indexOf(v.trim()) !== -1; }}
+  ];
+  var compWrap = root.querySelector('#ethq-comprehension');
+  questions.forEach(function(item, idx){
+    var box = el('div','ethq-qline');
+    var label = el('label', null, item.q);
+    box.appendChild(label);
+    var input = document.createElement('input');
+    input.type = 'text'; input.className = 'ethq-cinput'; input.setAttribute('data-idx', idx);
+    box.appendChild(input);
+    var fb = el('div','ethq-fb');
+    fb.id = 'ethq-fb-' + idx;
+    box.appendChild(fb);
+    compWrap.appendChild(box);
+  });
+
+  // Part D: writing
+  var fwWrap = root.querySelector('#ethq-fivewords');
+  for(var i=0;i<5;i++){
+    var inp = document.createElement('input');
+    inp.type = 'text'; inp.className = 'ethq-wword';
+    inp.placeholder = 'Word ' + (i+1);
+    fwWrap.appendChild(inp);
+  }
+  var tsWrap = root.querySelector('#ethq-threesentences');
+  for(var j=0;j<3;j++){
+    var sinp = document.createElement('input');
+    sinp.type = 'text'; sinp.className = 'ethq-wsent';
+    sinp.placeholder = 'Sentence ' + (j+1) + ' about yourself';
+    sinp.style.cssText = 'width:100%;padding:9px 10px;border:1.5px solid #D8CFA9;border-radius:8px;font-size:13.5px;font-family:Mulish,sans-serif;margin-bottom:8px;';
+    tsWrap.appendChild(sinp);
+  }
+
+  // Progress dots
+  function markDot(letter){
+    var d = root.querySelector('.ethq-dot[data-dot="'+letter+'"]');
+    if(d) d.classList.add('ethq-done');
+  }
+  root.querySelector('#ethq-partA').addEventListener('click', function(){ markDot('A'); }, true);
+  root.querySelector('#ethq-partB').addEventListener('click', function(){ markDot('B'); }, true);
+  root.querySelector('#ethq-partC').addEventListener('input', function(){ markDot('C'); }, true);
+  root.querySelector('#ethq-partD').addEventListener('input', function(){ markDot('D'); }, true);
+
+  function rnd1(n){ return Math.round(n*10)/10; }
+
+  // Calculate score + build the full report for PDF
+  root.querySelector('#ethq-calc').addEventListener('click', function(){
+    var correctMatches = root.querySelectorAll('#ethq-match-words .ethq-correct').length;
+    var scoreA = rnd1((correctMatches/4)*5);
+
+    var checkedSent = root.querySelectorAll('.ethq-sentcheck:checked').length;
+    var scoreB = checkedSent;
+
+    var scoreC = 0;
+    var comprehensionDetail = [];
+    var cinputs = root.querySelectorAll('.ethq-cinput');
+    cinputs.forEach(function(inp){
+      var idx = parseInt(inp.getAttribute('data-idx'),10);
+      var raw = inp.value.trim();
+      var v = raw.toLowerCase();
+      var fb = root.querySelector('#ethq-fb-'+idx);
+      var correct = v.length>0 && questions[idx].check(v);
+      if(v.length===0){ fb.className='ethq-fb'; fb.textContent=''; }
+      else if(correct){ scoreC += 1; fb.className='ethq-fb ethq-fb-ok'; fb.textContent='\u2713 Correct!'; }
+      else { fb.className='ethq-fb ethq-fb-no'; fb.textContent='Try again \u2014 read the passage once more.'; }
+      comprehensionDetail.push({q:questions[idx].q, answer:raw, correct:correct, hint:questions[idx].hint});
+    });
+
+    var wordsFilled = 0;
+    var fiveWords = [];
+    root.querySelectorAll('.ethq-wword').forEach(function(i){ fiveWords.push(i.value.trim()); if(i.value.trim().length>0) wordsFilled++; });
+    var sentFilled = 0;
+    var threeSentences = [];
+    root.querySelectorAll('.ethq-wsent').forEach(function(i){ threeSentences.push(i.value.trim()); if(i.value.trim().length>0) sentFilled++; });
+    var scoreD = rnd1((wordsFilled/5)*2.5 + (sentFilled/3)*2.5);
+
+    var total = Math.round(scoreA + scoreB + scoreC + scoreD);
+
+    var stage, emoji, msg;
+    if(total <= 5){ stage='Beginner'; emoji='&#127792;'; msg='Every reader starts with a seed. Keep practising letters and words a little every day \u2014 you will grow fast!'; }
+    else if(total <= 10){ stage='Basic'; emoji='&#127793;'; msg='You are sprouting up nicely! Practise reading sentences aloud to your teacher or a family member this week.'; }
+    else if(total <= 15){ stage='Developing'; emoji='&#127807;'; msg='You are branching out well \u2014 your reading and writing are growing strong. A little more comprehension practice will help.'; }
+    else { stage='Independent Reader'; emoji='&#127795;'; msg='Wonderful! You read and write with confidence. Keep reading new stories to grow even taller!'; }
+
+    var studentName = root.querySelector('#ethq-name').value.trim();
+    var studentClass = root.querySelector('#ethq-class').value.trim();
+    var resultName = studentName ? ('Well done, ' + studentName + '!') : 'Well done!';
+
+    root.querySelector('#ethq-stage-emoji').innerHTML = emoji;
+    root.querySelector('#ethq-result-name').textContent = resultName;
+    root.querySelector('#ethq-result-score').textContent = 'Score: ' + total + ' / 20';
+    root.querySelector('#ethq-result-stage').textContent = stage;
+    root.querySelector('#ethq-result-msg').textContent = msg;
+    root.querySelector('#ethq-result').style.display = 'block';
+    markDot('A'); markDot('B'); markDot('C'); markDot('D');
+
+    var matchedWords = [];
+    root.querySelectorAll('#ethq-match-words .ethq-match-btn.ethq-correct').forEach(function(b){ matchedWords.push(b.textContent); });
+
+    var lettersChecked = [];
+    root.querySelectorAll('#ethq-letters .ethq-flash').forEach(function(card){
+      if(card.querySelector('.ethq-readcheck').checked) lettersChecked.push(card.querySelector('.ethq-flash-text').textContent);
+    });
+    var wordsChecked = [];
+    root.querySelectorAll('#ethq-words .ethq-flash').forEach(function(card){
+      if(card.querySelector('.ethq-readcheck').checked) wordsChecked.push(card.querySelector('.ethq-flash-text').textContent);
+    });
+    var sentenceDetail = [];
+    root.querySelectorAll('#ethq-sentences .ethq-sentwrap').forEach(function(wrap){
+      sentenceDetail.push({
+        text: wrap.querySelector('.ethq-sentence span').textContent,
+        checked: wrap.querySelector('.ethq-sentcheck').checked
+      });
+    });
+
+    var today = new Date();
+    var dateStr = today.getDate() + '/' + (today.getMonth()+1) + '/' + today.getFullYear();
+
+    lastReport = {
+      name: studentName, cls: studentClass, dateStr: dateStr,
+      scoreA: scoreA, scoreB: scoreB, scoreC: scoreC, scoreD: scoreD, total: total,
+      stage: stage, msg: msg,
+      matchedWords: matchedWords, lettersChecked: lettersChecked, wordsChecked: wordsChecked,
+      sentences: sentenceDetail, comprehension: comprehensionDetail,
+      fiveWords: fiveWords, threeSentences: threeSentences
+    };
+
+    trackScore(lastReport);
+    root.querySelector('#ethq-result').scrollIntoView({behavior:'smooth', block:'center'});
+  });
+
+  function generatePDF(data){
+    var JSPDF = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : null;
+    if(!JSPDF){ alert('The PDF library could not be loaded. Please check your internet connection and try again.'); return; }
+    var doc = new JSPDF({unit:'pt', format:'a4'});
+    var pageW = doc.internal.pageSize.getWidth();
+    var pageH = doc.internal.pageSize.getHeight();
+    var marginX = 40, topY = 34, y = topY;
+    var navy=[27,42,74], gold=[201,162,39], green=[47,111,78], rust=[179,70,28], ink=[35,35,35], gray=[120,112,92];
+
+    function ensure(h){ if(y + h > pageH - 34){ doc.addPage(); y = topY; } }
+    function rule(){ doc.setDrawColor(gold[0],gold[1],gold[2]); doc.setLineWidth(1); doc.line(marginX, y, pageW-marginX, y); y += 8; }
+    function bodyText(text, opts){
+      opts = opts || {};
+      var size = opts.size || 9.5, bold = opts.bold, color = opts.color || ink, indent = opts.indent || 0;
+      var width = pageW - marginX*2 - indent;
+      doc.setFont('helvetica', bold ? 'bold':'normal'); doc.setFontSize(size); doc.setTextColor(color[0],color[1],color[2]);
+      var lines = doc.splitTextToSize(text, width);
+      var lh = size*1.16;
+      ensure(lines.length * lh);
+      doc.text(lines, marginX+indent, y);
+      y += lines.length * lh;
+    }
+
+    // Header
+    doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(navy[0],navy[1],navy[2]);
+    doc.text('THIRAN English Diagnostic Assessment', marginX, y); y+=16;
+    doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(gray[0],gray[1],gray[2]);
+    doc.text('English Teachers Hub Theni  |  englishteacherhub.blogspot.com', marginX, y); y+=12;
+    rule();
+
+    // Student info
+    doc.setFontSize(10); doc.setTextColor(ink[0],ink[1],ink[2]);
+    doc.setFont('helvetica','bold'); doc.text('Name:', marginX, y);
+    doc.setFont('helvetica','normal'); doc.text(data.name || '-', marginX+38, y);
+    doc.setFont('helvetica','bold'); doc.text('Class:', marginX+220, y);
+    doc.setFont('helvetica','normal'); doc.text(data.cls || '-', marginX+256, y);
+    doc.setFont('helvetica','bold'); doc.text('Date:', marginX+400, y);
+    doc.setFont('helvetica','normal'); doc.text(data.dateStr, marginX+432, y);
+    y += 18;
+
+    // Score table
+    var tableW = pageW - marginX*2;
+    doc.setFillColor(navy[0],navy[1],navy[2]); doc.rect(marginX, y, tableW, 17, 'F');
+    doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(9.5);
+    doc.text('Part', marginX+8, y+12);
+    doc.text('Skill', marginX+55, y+12);
+    doc.text('Marks', marginX+tableW-110, y+12);
+    doc.text('Out of', marginX+tableW-50, y+12);
+    y += 17;
+
+    var rows = [
+      ['A','Letter & Word Recognition', data.scoreA, 5],
+      ['B','Sentence Reading', data.scoreB, 5],
+      ['C','Reading Comprehension', data.scoreC, 5],
+      ['D','Writing Skill', data.scoreD, 5]
+    ];
+    rows.forEach(function(r, i){
+      if(i % 2 === 1){ doc.setFillColor(251,247,238); doc.rect(marginX, y, tableW, 15, 'F'); }
+      doc.setTextColor(ink[0],ink[1],ink[2]); doc.setFont('helvetica','normal'); doc.setFontSize(9.5);
+      doc.text(String(r[0]), marginX+8, y+11);
+      doc.text(r[1], marginX+55, y+11);
+      doc.text(String(r[2]), marginX+tableW-110, y+11);
+      doc.text(String(r[3]), marginX+tableW-50, y+11);
+      doc.setDrawColor(225,219,196); doc.line(marginX, y+15, marginX+tableW, y+15);
+      y += 15;
+    });
+    doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(navy[0],navy[1],navy[2]);
+    doc.text('Total', marginX+55, y+12);
+    doc.text(String(data.total), marginX+tableW-110, y+12);
+    doc.text('20', marginX+tableW-50, y+12);
+    y += 22;
+
+    doc.setFont('helvetica','bold'); doc.setFontSize(11.5); doc.setTextColor(navy[0],navy[1],navy[2]);
+    doc.text('Reading Level: ' + data.stage, marginX, y); y+=14;
+    bodyText(data.msg, {size:9, color: gray});
+    y += 6;
+
+    ensure(20);
+    doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(navy[0],navy[1],navy[2]);
+    doc.text('Detailed Answer Analysis', marginX, y); y += 12;
+    rule();
+
+    bodyText('Part A \u2014 Letter & Word Recognition', {bold:true, size:10, color:navy}); y+=1;
+    bodyText('Letters read confidently: ' + (data.lettersChecked.length ? data.lettersChecked.join(', ') : 'none marked'), {size:9});
+    bodyText('Words read confidently: ' + (data.wordsChecked.length ? data.wordsChecked.join(', ') : 'none marked'), {size:9});
+    bodyText('Picture matching \u2014 correct: ' + (data.matchedWords.length ? data.matchedWords.join(', ') : 'none completed') + '  (' + data.matchedWords.length + ' / 4)', {size:9});
+    y += 5;
+
+    bodyText('Part B \u2014 Sentence Reading', {bold:true, size:10, color:navy}); y+=1;
+    data.sentences.forEach(function(s){
+      bodyText((s.checked ? '[X] ' : '[ ] ') + s.text, {size:9, color: s.checked ? green : ink});
+    });
+    y += 5;
+
+    bodyText('Part C \u2014 Reading Comprehension', {bold:true, size:10, color:navy}); y+=1;
+    data.comprehension.forEach(function(item, idx){
+      ensure(36);
+      bodyText((idx+1) + '. ' + item.q, {bold:true, size:9.5});
+      bodyText('Answer: ' + (item.answer || '(not attempted)'), {size:9, indent:8});
+      if(item.answer){
+        bodyText(item.correct ? 'Correct' : ('Incorrect  (Expected: ' + item.hint + ')'), {size:9, indent:8, color: item.correct ? green : rust, bold:true});
+      }
+      y += 1;
+    });
+    y += 5;
+
+    bodyText('Part D \u2014 Writing Skill', {bold:true, size:10, color:navy}); y+=1;
+    bodyText('Five words written: ' + (data.fiveWords.filter(Boolean).join(', ') || '(none written)'), {size:9});
+    data.threeSentences.forEach(function(s, idx){
+      bodyText((idx+1) + '. ' + (s || '(not attempted)'), {size:9, indent:8});
+    });
+
+    y += 10;
+    ensure(30);
+    doc.setDrawColor(220,220,220); doc.line(marginX, y, pageW-marginX, y); y+=12;
+    doc.setFont('helvetica','italic'); doc.setFontSize(8.5); doc.setTextColor(gray[0],gray[1],gray[2]);
+    doc.text('T.S. Ramachandran, ELT, GHSS Erasakkanayakanur, Theni District  |  englishteacherhub.blogspot.com', marginX, y);
+
+    var fname = 'THIRAN_Report_' + (data.name ? data.name.replace(/[^a-zA-Z0-9]+/g,'_') : 'Student') + '.pdf';
+    doc.save(fname);
+  }
+
+  root.querySelector('#ethq-download-pdf').addEventListener('click', function(){
+    if(!lastReport) return;
+    var btn = this;
+    btn.disabled = true; var orig = btn.innerHTML; btn.innerHTML = 'Generating&hellip;';
+    setTimeout(function(){
+      generatePDF(lastReport);
+      btn.innerHTML = orig; btn.disabled = false;
+    }, 30);
+  });
+
+})();
+</script>
+</body>
+</html>
