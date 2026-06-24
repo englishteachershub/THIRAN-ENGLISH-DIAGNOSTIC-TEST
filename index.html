@@ -113,8 +113,9 @@ body{margin:0;padding:24px 12px;background:#EFE9D8;font-family:'Mulish',Arial,sa
 <p class="ethq-intro">Let&rsquo;s find out how you read and write in English &mdash; tap &#128266; Listen to hear each word, then try every part!</p>
 
 <div class="ethq-namebar">
-  <input type="text" id="ethq-name" placeholder="Your name">
+  <input type="text" id="ethq-name" placeholder="Student name">
   <input type="text" id="ethq-class" placeholder="Class &amp; Section">
+  <input type="text" id="ethq-school" placeholder="School name">
 </div>
 
 <!-- PART A -->
@@ -201,7 +202,7 @@ body{margin:0;padding:24px 12px;background:#EFE9D8;font-family:'Mulish',Arial,sa
         mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({
-          name: data.name, cls: data.cls,
+          name: data.name, cls: data.cls, school: data.school,
           scoreA: data.scoreA, scoreB: data.scoreB, scoreC: data.scoreC, scoreD: data.scoreD,
           total: data.total, stage: data.stage
         })
@@ -222,13 +223,16 @@ body{margin:0;padding:24px 12px;background:#EFE9D8;font-family:'Mulish',Arial,sa
 
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   var voiceOK = !!SR;
-  var letterPhonetics = {
-    'A':['a','ay','hey','eh','aye','hay','ei'],
-    'M':['m','em','am','hmm','mmm','them','umm'],
-    'T':['t','tea','tee','the','ti'],
-    'P':['p','pea','pee','bee'],
-    'R':['r','are','ar','arr','our','har']
-  };
+
+  // Normalise speech-engine quirks before comparing
+  function normaliseHeard(text){
+    return text
+      .replace(/everyday/g,'every day')
+      .replace(/gonna/g,'going to')
+      .replace(/wanna/g,'want to')
+      .replace(/\bam\b/g,'am')
+      .replace(/[^a-z\s]/g,' ');
+  }
 
   function checkVoice(targetText, fbEl, micBtn, mode){
     if(!voiceOK) return;
@@ -247,24 +251,24 @@ body{margin:0;padding:24px 12px;background:#EFE9D8;font-family:'Mulish',Arial,sa
         var alts = [];
         for(var i=0;i<e.results[0].length;i++){ alts.push(e.results[0][i].transcript.toLowerCase()); }
         var heardRaw = alts.join(' ');
-        var heard = heardRaw.replace(/[^a-z\s]/g,' ');
+        var heard = normaliseHeard(heardRaw);
         var heardWords = heard.split(/\s+/).filter(Boolean);
         var display = heardWords.join(' ') || heardRaw;
         var ok = false;
         if(mode === 'letter'){
-          var letterLower = targetText.toLowerCase();
-          var accepted = letterPhonetics[targetText.toUpperCase()] || [letterLower];
-          for(var k=0;k<heardWords.length;k++){
-            var hw = heardWords[k];
-            if(accepted.indexOf(hw) !== -1 || hw.charAt(0) === letterLower){ ok = true; break; }
-          }
+          // For single letters, if the mic picked up ANY sound at all, accept it.
+          // Letter phoneme recognition is too unreliable to penalise children.
+          ok = heardWords.length > 0;
         } else {
           var target = targetText.toLowerCase().replace(/[^a-z\s]/g,' ');
           var targetWords = target.split(/\s+/).filter(Boolean);
           var matched = 0;
           targetWords.forEach(function(w){ if(heardWords.indexOf(w) !== -1) matched++; });
           var ratio = targetWords.length ? (matched/targetWords.length) : 0;
-          ok = ratio >= 0.7;
+          // Also accept if heard string contains most of the target as a substring
+          var heardJoined = heardWords.join(' ');
+          var targetCore = targetWords.slice(0, Math.ceil(targetWords.length*0.6)).join(' ');
+          ok = ratio >= 0.6 || heardJoined.indexOf(targetCore) !== -1;
         }
         if(ok){
           fbEl.className = 'ethq-voicefb ok';
@@ -282,7 +286,7 @@ body{margin:0;padding:24px 12px;background:#EFE9D8;font-family:'Mulish',Arial,sa
       rec.onend = function(){
         if(!gotResult){
           fbEl.className = 'ethq-voicefb no';
-          fbEl.textContent = 'Didn\u2019t catch that \u2014 tap Say it and try again, a little louder/slower';
+          fbEl.textContent = 'Didn\u2019t catch that \u2014 tap Say it and speak a little louder';
         }
         micBtn.classList.remove('ethq-listening');
         micBtn.innerHTML = '&#127908; Say it';
@@ -447,13 +451,59 @@ body{margin:0;padding:24px 12px;background:#EFE9D8;font-family:'Mulish',Arial,sa
     inp.placeholder = 'Word ' + (i+1);
     fwWrap.appendChild(inp);
   }
+
+  // Add CSS for writing feedback inline
+  var wStyle = document.createElement('style');
+  wStyle.textContent = '#eth-thiran-quiz .ethq-wsentrow{margin-bottom:10px;}' +
+    '#eth-thiran-quiz .ethq-wsentrow input{width:100%;padding:9px 10px;border:1.5px solid #D8CFA9;border-radius:8px 8px 0 0;font-size:13.5px;font-family:Mulish,sans-serif;}' +
+    '#eth-thiran-quiz .ethq-wsentrow input:focus{outline:none;border-color:#C9A227;}' +
+    '#eth-thiran-quiz .ethq-checkwriting{background:#1B2A4A;color:#E3C97A;border:none;border-radius:0 0 8px 8px;width:100%;padding:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:Mulish,sans-serif;}' +
+    '#eth-thiran-quiz .ethq-checkwriting:hover{background:#2a3f6a;}' +
+    '#eth-thiran-quiz .ethq-checkwriting:disabled{opacity:.6;cursor:wait;}' +
+    '#eth-thiran-quiz .ethq-wfb{font-size:12px;padding:6px 10px;border-radius:0 0 8px 8px;margin-top:-1px;display:none;}' +
+    '#eth-thiran-quiz .ethq-wfb.show{display:block;background:#FBF7EE;border:1px solid #ECE4CC;border-top:none;}';
+  document.head.appendChild(wStyle);
+
   var tsWrap = root.querySelector('#ethq-threesentences');
   for(var j=0;j<3;j++){
-    var sinp = document.createElement('input');
-    sinp.type = 'text'; sinp.className = 'ethq-wsent';
-    sinp.placeholder = 'Sentence ' + (j+1) + ' about yourself';
-    sinp.style.cssText = 'width:100%;padding:9px 10px;border:1.5px solid #D8CFA9;border-radius:8px;font-size:13.5px;font-family:Mulish,sans-serif;margin-bottom:8px;';
-    tsWrap.appendChild(sinp);
+    (function(idx){
+      var row = el('div','ethq-wsentrow');
+      var sinp = document.createElement('input');
+      sinp.type = 'text'; sinp.className = 'ethq-wsent';
+      sinp.placeholder = 'Sentence ' + (idx+1) + ' about yourself';
+      row.appendChild(sinp);
+      var checkBtn = el('button','ethq-checkwriting', '&#129302; Check my writing');
+      checkBtn.type = 'button';
+      var wfb = el('div','ethq-wfb');
+      checkBtn.addEventListener('click', function(){
+        var txt = sinp.value.trim();
+        if(!txt){ wfb.className='ethq-wfb'; wfb.textContent=''; return; }
+        checkBtn.disabled = true; checkBtn.innerHTML = 'Checking&hellip;';
+        wfb.className='ethq-wfb show'; wfb.textContent = 'Checking your sentence\u2026';
+        fetch('https://api.anthropic.com/v1/messages',{
+          method:'POST',
+          headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+          body: JSON.stringify({
+            model:'claude-sonnet-4-6', max_tokens:200,
+            system:'You are a kind English teacher helping a young student (Class 6-8) in India. Check ONLY spelling and grammar. Be encouraging. Reply in 1-2 short sentences only. If correct say: "Well done! Your sentence is correct." If there are mistakes, point them out gently like: "Good try! Try: [corrected sentence]. [One tip]." Never rewrite everything. Keep it simple.',
+            messages:[{role:'user', content:'Check this student sentence: "' + txt + '"'}]
+          })
+        })
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          var reply = (d.content && d.content[0] && d.content[0].text) ? d.content[0].text : 'Could not check right now.';
+          wfb.textContent = reply;
+          checkBtn.disabled = false; checkBtn.innerHTML = '&#129302; Check my writing';
+        })
+        .catch(function(){
+          wfb.textContent = 'Could not connect. Check your internet and try again.';
+          checkBtn.disabled = false; checkBtn.innerHTML = '&#129302; Check my writing';
+        });
+      });
+      row.appendChild(checkBtn);
+      row.appendChild(wfb);
+      tsWrap.appendChild(row);
+    })(j);
   }
 
   // Progress dots
@@ -509,6 +559,7 @@ body{margin:0;padding:24px 12px;background:#EFE9D8;font-family:'Mulish',Arial,sa
 
     var studentName = root.querySelector('#ethq-name').value.trim();
     var studentClass = root.querySelector('#ethq-class').value.trim();
+    var studentSchool = root.querySelector('#ethq-school').value.trim();
     var resultName = studentName ? ('Well done, ' + studentName + '!') : 'Well done!';
 
     root.querySelector('#ethq-stage-emoji').innerHTML = emoji;
@@ -542,7 +593,7 @@ body{margin:0;padding:24px 12px;background:#EFE9D8;font-family:'Mulish',Arial,sa
     var dateStr = today.getDate() + '/' + (today.getMonth()+1) + '/' + today.getFullYear();
 
     lastReport = {
-      name: studentName, cls: studentClass, dateStr: dateStr,
+      name: studentName, cls: studentClass, school: studentSchool, dateStr: dateStr,
       scoreA: scoreA, scoreB: scoreB, scoreC: scoreC, scoreD: scoreD, total: total,
       stage: stage, msg: msg,
       matchedWords: matchedWords, lettersChecked: lettersChecked, wordsChecked: wordsChecked,
@@ -592,6 +643,9 @@ body{margin:0;padding:24px 12px;background:#EFE9D8;font-family:'Mulish',Arial,sa
     doc.setFont('helvetica','normal'); doc.text(data.cls || '-', marginX+256, y);
     doc.setFont('helvetica','bold'); doc.text('Date:', marginX+400, y);
     doc.setFont('helvetica','normal'); doc.text(data.dateStr, marginX+432, y);
+    y += 14;
+    doc.setFont('helvetica','bold'); doc.text('School:', marginX, y);
+    doc.setFont('helvetica','normal'); doc.text(data.school || '-', marginX+42, y);
     y += 18;
 
     // Score table
